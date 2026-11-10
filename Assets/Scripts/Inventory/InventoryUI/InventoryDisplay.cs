@@ -32,16 +32,28 @@ public abstract class InventoryDisplay : MonoBehaviour
 
     public void SlotClicked(InventorySlotUI clickedUISlot)
     {
+        bool isShiftPressed = Keyboard.current.leftShiftKey.isPressed;
+
+
         //Clicked slot has an item and the mouse doesn't have an item, we need to pick up that item;
         if(clickedUISlot.AssignedInventorySlot.ItemData != null && mouseInventoryItem.assignedInventorySlot.ItemData == null)
         {
             //Check if the player is holding shift key, then we want to split the stack;
-            mouseInventoryItem.UpdateMouseSlot(clickedUISlot.AssignedInventorySlot);
-            clickedUISlot.ClearSlot();
-            
-            return;
-        }
+            if (isShiftPressed && clickedUISlot.AssignedInventorySlot.SplitStack(out InventorySlot halfStackSlot)) //Split the stack
+            {
+                mouseInventoryItem.UpdateMouseSlot(halfStackSlot);
+                clickedUISlot.UpdateUISlot();
+                return;
+            }
+            else
+            {
+                mouseInventoryItem.UpdateMouseSlot(clickedUISlot.AssignedInventorySlot);
+                clickedUISlot.ClearSlot();
 
+                return;
+            }
+
+        }
 
         //If the clicked slot doesnt have an item and the mouse does have one, then place the mouse item into the empty slot;
 
@@ -51,6 +63,7 @@ public abstract class InventoryDisplay : MonoBehaviour
             clickedUISlot.UpdateUISlot();
 
             mouseInventoryItem.ClearShot();
+            return;
         }
 
         //Check if both slots have an item, and if they do decide what to do;
@@ -81,12 +94,14 @@ public abstract class InventoryDisplay : MonoBehaviour
                     var newItem = new InventorySlot(mouseInventoryItem.assignedInventorySlot.ItemData, remainingOnMouse);
                     mouseInventoryItem.ClearShot();
                     mouseInventoryItem.UpdateMouseSlot(newItem);
+                    return;
                 }
 
             }
             else if(!isSameItem)
             {
                 SwapSlots(clickedUISlot);
+                return;
             }
         }
     }
