@@ -60,7 +60,31 @@ public abstract class InventoryDisplay : MonoBehaviour
 
         if (clickedUISlot.AssignedInventorySlot.ItemData != null && mouseInventoryItem.assignedInventorySlot.ItemData != null)
         {
-            if (clickedUISlot.AssignedInventorySlot.ItemData != mouseInventoryItem.assignedInventorySlot.ItemData)
+            bool isSameItem = clickedUISlot.AssignedInventorySlot.ItemData == mouseInventoryItem.assignedInventorySlot.ItemData;
+
+            if (isSameItem && clickedUISlot.AssignedInventorySlot.RoomLeftInStack(mouseInventoryItem.assignedInventorySlot.StackSize))
+            {
+                clickedUISlot.AssignedInventorySlot.AssignItem(mouseInventoryItem.assignedInventorySlot);
+                clickedUISlot.UpdateUISlot();
+
+                mouseInventoryItem.ClearShot();
+            } 
+            else if(isSameItem && !clickedUISlot.AssignedInventorySlot.RoomLeftInStack(mouseInventoryItem.assignedInventorySlot.StackSize, out int leftInTheStack))
+            {
+                if (leftInTheStack < 1) SwapSlots(clickedUISlot);   //Stack is full, so swap the items;
+                else //Slow is not at max, so take whats needed from the mouse inventory;
+                {
+                    int remainingOnMouse = mouseInventoryItem.assignedInventorySlot.StackSize - leftInTheStack;
+                    clickedUISlot.AssignedInventorySlot.AddToStack(leftInTheStack);
+                    clickedUISlot.UpdateUISlot();
+
+                    var newItem = new InventorySlot(mouseInventoryItem.assignedInventorySlot.ItemData, remainingOnMouse);
+                    mouseInventoryItem.ClearShot();
+                    mouseInventoryItem.UpdateMouseSlot(newItem);
+                }
+
+            }
+            else if(!isSameItem)
             {
                 SwapSlots(clickedUISlot);
             }
