@@ -43,7 +43,7 @@ public class InventorySystem
             }
             
         }
-        else if(HasFreeSlot(out InventorySlot freeSlot))    //Gets the first available slot;
+        if(HasFreeSlot(out InventorySlot freeSlot))    //Gets the first available slot;
         {
             freeSlot.UpdateInventorySlot(itemToAdd, amountToAdd);
             OnInventorySlotChanged?.Invoke(freeSlot);
@@ -59,12 +59,12 @@ public class InventorySystem
         invSlot = InventorySlots.Where(i => i.ItemData == itemToAdd).ToList();
 
         //if it contains the item it returns true, otherwise false;
-        return inventorySlots.Count > 1 ? true : false;
+        return inventorySlots == null ? false : true;
     }
 
     public bool HasFreeSlot(out InventorySlot freeSlot)
     {
-        freeSlot = null;
-        return false;
+        freeSlot = inventorySlots.FirstOrDefault( i => i.ItemData == null);
+        return freeSlot == null ? false : true;
     }
 }
