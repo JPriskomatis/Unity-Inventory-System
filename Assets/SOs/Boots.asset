@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b6b2e6b14af307a459f7aa8dd9cc5b45, type: 3}
-  m_Name: testItem1
+  m_Name: Boots
   m_EditorClassIdentifier: InventoryAssembly::InventoryItemData
   id: 0
-  displayName: testItem1
-  description: 
-  icon: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  displayName: Boots
+  description: This is boots
+  icon: {fileID: 21300000, guid: a0ac11ea5e3332a4baee6511e70ca46d, type: 3}
   maxStackSize: 2

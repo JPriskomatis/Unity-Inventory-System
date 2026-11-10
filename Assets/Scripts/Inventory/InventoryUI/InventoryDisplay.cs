@@ -30,9 +30,54 @@ public abstract class InventoryDisplay : MonoBehaviour
         }
     }
 
-    public void SlotClicked(InventorySlotUI clickedSlot)
+    public void SlotClicked(InventorySlotUI clickedUISlot)
     {
-        Debug.Log("Slot clicked!");
+        //Clicked slot has an item and the mouse doesn't have an item, we need to pick up that item;
+        if(clickedUISlot.AssignedInventorySlot.ItemData != null && mouseInventoryItem.assignedInventorySlot.ItemData == null)
+        {
+            //Check if the player is holding shift key, then we want to split the stack;
+            mouseInventoryItem.UpdateMouseSlot(clickedUISlot.AssignedInventorySlot);
+            clickedUISlot.ClearSlot();
+            
+            return;
+        }
+
+
+        //If the clicked slot doesnt have an item and the mouse does have one, then place the mouse item into the empty slot;
+
+        if(clickedUISlot.AssignedInventorySlot.ItemData == null && mouseInventoryItem.assignedInventorySlot.ItemData != null)
+        {
+            clickedUISlot.AssignedInventorySlot.AssignItem(mouseInventoryItem.assignedInventorySlot);
+            clickedUISlot.UpdateUISlot();
+
+            mouseInventoryItem.ClearShot();
+        }
+
+        //Check if both slots have an item, and if they do decide what to do;
+            //If both items are the same, then combine them
+                //Is the slot stack size + mouse stack size > slot Max Stack Size? if so, take from mouse.
+            //If they are different, then swap the items;
+
+        if (clickedUISlot.AssignedInventorySlot.ItemData != null && mouseInventoryItem.assignedInventorySlot.ItemData != null)
+        {
+            if (clickedUISlot.AssignedInventorySlot.ItemData != mouseInventoryItem.assignedInventorySlot.ItemData)
+            {
+                SwapSlots(clickedUISlot);
+            }
+        }
+    }
+
+    private void SwapSlots(InventorySlotUI clickedUISlot)
+    {
+        var clonedSlot = new InventorySlot(mouseInventoryItem.assignedInventorySlot.ItemData, mouseInventoryItem.assignedInventorySlot.StackSize);
+        mouseInventoryItem.ClearShot();
+
+        mouseInventoryItem.UpdateMouseSlot(clickedUISlot.AssignedInventorySlot);
+
+        clickedUISlot.ClearSlot();
+
+        clickedUISlot.AssignedInventorySlot.AssignItem(clonedSlot);
+        clickedUISlot.UpdateUISlot();
     }
 
 }
