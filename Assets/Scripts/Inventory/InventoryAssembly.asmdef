@@ -2,7 +2,8 @@
     "name": "InventoryAssembly",
     "rootNamespace": "",
     "references": [
-        "GUID:24d33f6424a87e047a8d5e288612f61f"
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:75469ad4d38634e559750d17036d5f7c"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
