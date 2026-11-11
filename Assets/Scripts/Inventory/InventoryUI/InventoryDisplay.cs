@@ -10,7 +10,7 @@ public abstract class InventoryDisplay : MonoBehaviour
 
 
     public InventorySystem InventorySystem => inventorySystem;
-    public Dictionary<InventorySlotUI, InventorySlot> SlotDictionary => slotDictionary;
+    public Dictionary<InventorySlotUI, InventorySlot> SlotDictionary => slotDictionary; //Pair up the UI slots with the system slots.
 
     protected virtual void Start()
     {
@@ -75,14 +75,14 @@ public abstract class InventoryDisplay : MonoBehaviour
         {
             bool isSameItem = clickedUISlot.AssignedInventorySlot.ItemData == mouseInventoryItem.assignedInventorySlot.ItemData;
 
-            if (isSameItem && clickedUISlot.AssignedInventorySlot.RoomLeftInStack(mouseInventoryItem.assignedInventorySlot.StackSize))
+            if (isSameItem && clickedUISlot.AssignedInventorySlot.EnoughRoomLeftInStack(mouseInventoryItem.assignedInventorySlot.StackSize))
             {
                 clickedUISlot.AssignedInventorySlot.AssignItem(mouseInventoryItem.assignedInventorySlot);
                 clickedUISlot.UpdateUISlot();
 
                 mouseInventoryItem.ClearShot();
             } 
-            else if(isSameItem && !clickedUISlot.AssignedInventorySlot.RoomLeftInStack(mouseInventoryItem.assignedInventorySlot.StackSize, out int leftInTheStack))
+            else if(isSameItem && !clickedUISlot.AssignedInventorySlot.EnoughRoomLeftInStack(mouseInventoryItem.assignedInventorySlot.StackSize, out int leftInTheStack))
             {
                 if (leftInTheStack < 1) SwapSlots(clickedUISlot);   //Stack is full, so swap the items;
                 else //Slow is not at max, so take whats needed from the mouse inventory;
@@ -108,6 +108,7 @@ public abstract class InventoryDisplay : MonoBehaviour
 
     private void SwapSlots(InventorySlotUI clickedUISlot)
     {
+        //Cloning inventory mouse slot to swap to the clickedUI slot;
         var clonedSlot = new InventorySlot(mouseInventoryItem.assignedInventorySlot.ItemData, mouseInventoryItem.assignedInventorySlot.StackSize);
         mouseInventoryItem.ClearShot();
 

@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
+using UnityEditor.Graphs;
 using UnityEngine;
 using UnityEngine.Events;
-using System.Linq;
 
 [System.Serializable]
 public class InventorySystem
@@ -34,7 +35,7 @@ public class InventorySystem
         {
             foreach(var slot in invSlot)
             {
-                if (slot.RoomLeftInStack(amountToAdd))
+                if (slot.EnoughRoomLeftInStack(amountToAdd))
                 {
                     slot.AddToStack(amountToAdd);
                     OnInventorySlotChanged?.Invoke(slot);
@@ -45,15 +46,18 @@ public class InventorySystem
         }
         if(HasFreeSlot(out InventorySlot freeSlot))    //Gets the first available slot;
         {
-            freeSlot.UpdateInventorySlot(itemToAdd, amountToAdd);
-            OnInventorySlotChanged?.Invoke(freeSlot);
-            return true;
+            if (freeSlot.EnoughRoomLeftInStack(amountToAdd))
+            {
+                freeSlot.UpdateInventorySlot(itemToAdd, amountToAdd);
+                OnInventorySlotChanged?.Invoke(freeSlot);
+                return true;
+            }
         }
 
         return false;
     }
 
-    public bool ContainsItem(InventoryItemData itemToAdd, out List<InventorySlot> invSlot)
+    public bool ContainsItem(InventoryItemData itemToAdd, out List<InventorySlot> invSlot)  //Does any of our slots have the item to add in them;
     {
         //checks all our inventory slots, and it creates a list of inventorySlots to fill it, where the itemData is equal to the item we want to add;
         invSlot = InventorySlots.Where(i => i.ItemData == itemToAdd).ToList();
@@ -64,7 +68,7 @@ public class InventorySystem
 
     public bool HasFreeSlot(out InventorySlot freeSlot)
     {
-        freeSlot = inventorySlots.FirstOrDefault( i => i.ItemData == null);
+        freeSlot = inventorySlots.FirstOrDefault( i => i.ItemData == null); //Gets the first free slot;
         return freeSlot == null ? false : true;
     }
 }
